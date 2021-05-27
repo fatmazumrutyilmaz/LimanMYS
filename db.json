@@ -2,8 +2,15 @@
     "name": "Zumrut",
     "publisher": "Administrator",
     "version": "0.0.1",
-    "version_code": 1,
-    "database": [],
+    "version_code": 2,
+    "database": [
+        {
+            "variable": "zumrut",
+            "type": "kullanici_adi",
+            "name": "Kullan\u0131c\u0131 Ad\u0131",
+            "required": true
+        }
+    ],
     "widgets": [],
     "language": "php",
     "status": 0,

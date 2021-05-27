@@ -7,6 +7,45 @@
         return respond(runCommand("hostname"),200);
     }
 
+    function trustedServers(){
+        $allData = runCommand(sudo() . "samba-tool domain trust list 2>&1");
+        $allDataList = explode("\n", $allData);
+
+        $data=[];
+        foreach($allDataList as $item){
+            if($item){
+                $itemInfos = explode("[", $item);
+                $data[] = [
+                    "type" => substr($itemInfos[1], 0, strpos($itemInfos[1], "]")),
+                    "transitive" => substr($itemInfos[2], 0, strpos($itemInfos[2], "]")),
+                    "direction" => substr($itemInfos[3], 0, strpos($itemInfos[3], "]")),
+                    "name" => substr($itemInfos[4], 0, strpos($itemInfos[4], "]"))
+                ];
+            }
+        }                
+
+        return view('table', [
+            "value" => $data,
+            "title" => ["Names of Servers", "*hidden*", "*hidden*", "*hidden*"],
+            "display" => ["name", "type:type", "transitive:transitive", "direction:direction"],
+            "onclick" => "showTrustedServerDetailsModal",
+            "menu" => [
+
+                "Delete" => [
+                    "target" => "showDeleteTrustedServerModal",
+                    "icon" => "fas fa-trash"
+                ],
+
+            ],
+        ]);
+    }
+
+    function destroyTrustRelation(){
+        $name = request("name");
+        // TO BE COMPLETED
+        return respond($fileName, 200);
+    }
+
     function groups(){        
         $allData = runCommand("cat /etc/group");
         $allDataList = explode("\n", $allData);
@@ -48,4 +87,6 @@
         runCommand('echo "' . $content . '" > /home/fatmazumrutyilmaz/Masaüstü/' . $fileName);
         return respond($fileName, 200);
     }
+
+    //$username = extensionDb('smbUserName');
 ?>
