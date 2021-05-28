@@ -68,13 +68,12 @@
         ],
         "footer" => [
             "text" => "Delete",
-            "class" => "btn-success",
+            "class" => "btn-danger",
             "onclick" => "destroyTrustRelation()"
         ]
     ])
         @include('inputs', [
         "inputs" => [
-            "Message" => "message",
             "Password" => "password:password"
         ]
     ])
@@ -163,16 +162,18 @@
         $('#trustedServerDetailsModal').modal("hide");
     }
 
+    function closeDeleteTrustedServerModal(){
+        $('#deleteTrustedServerModal').modal("hide");
+    }
+
     function showDeleteTrustedServerModal(line){
         let name = line.querySelector("#name").innerHTML;
         domainName = name;
-        $('#deleteTrustedServerModal').find('.modal-body').html(
-            "Trust relation with \"".bold() + name.bold() + "\" will destroy. Do you really want to continue?".bold());
+        $('#deleteTrustedServerModal').find('.modal-body').prepend(
+            "If you destroy trust relation with \"".bold() + name.bold() + "\", please fill the password field.".bold() + "<br><br>");
+        $('#deleteTrustedServerModal').find('.modal-footer')
+            .append('<button type="button" class="btn btn-primary" onClick="closeDeleteTrustedServerModal()">Cancel</button>');
         $('#deleteTrustedServerModal').modal("show");
-    }
-
-    function closeDeleteTrustedServerModal(){
-        $('#deleteTrustedServerModal').modal("hide");
     }
 
     function destroyTrustRelation(){
