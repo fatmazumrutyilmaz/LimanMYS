@@ -28,7 +28,7 @@
 
 @component('modal-component',[
         "id" => "deleteTrustedServerModal",
-        "title" => "Trust Relation will destroy. Do you really want to continue?",
+        "title" => "Warning",
         "footer" => [
             "text" => "Cancel",
             "class" => "btn-success",
@@ -37,7 +37,7 @@
         "footer" => [
             "text" => "Delete",
             "class" => "btn-success",
-            "onclick" => "closeTrustedServerDetailsModal()"
+            "onclick" => "destroyTrustRelation()"
         ]
     ])
 @endcomponent
@@ -121,25 +121,27 @@
     }
 
     function showDeleteTrustedServerModal(line){
+        let name = line.querySelector("#name").innerHTML;
+        $('#deleteTrustedServerModal').find('.modal-body').html(
+            "Trust relation with \"".bold() + name.bold() + "\" will destroy. Do you really want to continue?".bold());
         $('#deleteTrustedServerModal').modal("show");
         var form = new FormData();
-        
-        request(API('destroyTrustRelation'), form, function(response) {
+
+       /** request(API('destroyTrustRelation'), form, function(response) {
             message = JSON.parse(response)["message"];
             showSwal(message, 'success', 3000);
             $('#deleteTrustedServerModal').modal("hide");
         }, function(error) {
             showSwal(error.message, 'error', 3000);
-        });
+        });*/
     }
 
     function closeDeleteTrustedServerModal(){
         $('#deleteTrustedServerModal').modal("hide");
     }
 
-    function destroyTrustRelation(line){
+    function destroyTrustRelation(){
         var form = new FormData();
-        form.append(line.querySelector("#name"));
         request(API('destroyTrustRelation'), form, function(response) {
             message = JSON.parse(response)["message"];
             showSwal(message, 'success', 3000);

@@ -42,8 +42,8 @@
 
     function destroyTrustRelation(){
         $name = request("name");
-        // TO BE COMPLETED
-        return respond($fileName, 200);
+        runCommand(sudo() . "samba-tool domain trust delete" . $name);
+        return respond("Trust relation with " . $name . " was destroyed", 200);
     }
 
     function groups(){        
