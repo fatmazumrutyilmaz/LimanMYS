@@ -26,12 +26,23 @@
     ])
     @include('inputs', [
         "inputs" => [
-            "Domain Name" => "newDomainName:text",
+            "Domain Name" => "newDomainName:text:deneme.lab",
             "IP Address" => "newIpAddr:text",
-            "Type" => "newType:text",
-            "Direction" => "newDirection:text",
-            "Create Location" => "newCreateLocation:text",
-            "Username" => "newUsername:text"
+            "Type:newType" => [
+                "forest" => "forest",
+                "external" => "external"
+            ],
+            "Direction:newDirection" => [
+                "incoming" => "incoming",
+                "outgoing" => "outgoing",
+                "both" => "both"
+            ],
+            "Create Location:newCreateLocation" => [
+                "local" => "local",
+                "both" => "both"
+            ],
+            "Username" => "newUsername:text",
+            "Password" => "password:password"
         ]
     ])
 @endcomponent
@@ -59,6 +70,11 @@
             "text" => "Delete",
             "class" => "btn-success",
             "onclick" => "destroyTrustRelation()"
+        ]
+    ])
+        @include('inputs', [
+        "inputs" => [
+            "Password" => "password:password"
         ]
     ])
 @endcomponent
@@ -94,6 +110,7 @@
 
 <script>
     var domainName = "";
+    var passwd = "";
 
     if(location.hash === ""){
         tab1();
@@ -148,8 +165,8 @@
     function showDeleteTrustedServerModal(line){
         let name = line.querySelector("#name").innerHTML;
         domainName = name;
-        $('#deleteTrustedServerModal').find('.modal-body').html(
-            "Trust relation with \"".bold() + name.bold() + "\" will destroy. Do you really want to continue?".bold());
+       // $('#deleteTrustedServerModal').find('.modal-body').html(
+         //   "Trust relation with \"".bold() + name.bold() + "\" will destroy. Do you really want to continue?".bold());
         $('#deleteTrustedServerModal').modal("show");
     }
 
@@ -157,9 +174,11 @@
         $('#deleteTrustedServerModal').modal("hide");
     }
 
-    function destroyTrustRelation(line){
+    function destroyTrustRelation(){
         var form = new FormData();
         form.append("name", domainName);
+        passwd = $('#deleteTrustedServerModal').find('input[name=password]').val();
+        form.append("password", passwd);
         request(API('destroyTrustRelation'), form, function(response) {
             message = JSON.parse(response)["message"];
             showSwal(message, 'success', 3000);
@@ -175,12 +194,13 @@
 
     function createTrustRelation(){
         var form = new FormData();
-        form.append("newDomainName", $('#createTrustRelationModal').find('input[name=newDomainName]').val().toLowerCase());
+        form.append("newDomainName", $('#createTrustRelationModal').find('input[name=newDomainName]').val());
         form.append("newIpAddr", $('#createTrustRelationModal').find('input[name=newIpAddr]').val());
-        form.append("newType", $('#createTrustRelationModal').find('input[name=newType]').val().toLowerCase());
-        form.append("newDirection", $('#createTrustRelationModal').find('input[name=newDirection]').val().toLowerCase());
-        form.append("newCreateLocation", $('#createTrustRelationModal').find('input[name=newCreateLocation]').val().toLowerCase());
+        form.append("newType", $('#createTrustRelationModal').find('select[name=newType]').val());
+        form.append("newDirection", $('#createTrustRelationModal').find('select[name=newDirection]').val());
+        form.append("newCreateLocation", $('#createTrustRelationModal').find('select[name=newCreateLocation]').val());
         form.append("newUsername", $('#createTrustRelationModal').find('input[name=newUsername]').val());
+        form.append("password", $('#createTrustRelationModal').find('input[name=password]').val());
 
         request(API('createTrustRelation'), form, function(response) {
             message = JSON.parse(response)["message"];
