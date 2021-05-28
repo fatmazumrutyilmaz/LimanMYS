@@ -42,8 +42,21 @@
 
     function destroyTrustRelation(){
         $name = request("name");
-        runCommand(sudo() . "samba-tool domain trust delete" . $name);
+        //runCommand(sudo() . " samba-tool domain trust delete -U administrator@" . $name);
         return respond("Trust relation with " . $name . " was destroyed", 200);
+    }
+
+    function createTrustRelation(){
+        $domainName = request("newDomainName");
+        $ipAddr = request("newIpAddr");
+        $type = request("newType");
+        $direction = request("newDirection");
+        $createLocation = request("newCreateLocation");
+        $username = request("newUsername");
+        runCommand(sudo() . " samba-tool domain trust create " . $domainName .
+                    " --type=" . $type . " --direction=" . $direction .
+                    " --create-location=" . $createLocation . " -U " . $username);
+        return("Trust relation with " . $domainName . " has been created", 200);
     }
 
     function groups(){        

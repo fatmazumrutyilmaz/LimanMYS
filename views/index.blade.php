@@ -16,6 +16,27 @@
 @endcomponent
 
 @component('modal-component',[
+        "id" => "createTrustRelationModal",
+        "title" => "Create Trust Relation",
+        "footer" => [
+            "text" => "Create",
+            "class" => "btn-success",
+            "onclick" => "showCreateTrustRelationModal()"
+        ]
+    ])
+    @include('inputs', [
+        "inputs" => [
+            "Domain Name" => "newDomainName:text",
+            "IP Address" => "newIpAddr:text",
+            "Type" => "newType:text",
+            "Direction" => "newDirection:text",
+            "Create Location" => "newCreateLocation:text",
+            "Username" => "newUsername:text"
+        ]
+    ])
+@endcomponent
+
+@component('modal-component',[
         "id" => "trustedServerDetailsModal",
         "title" => "Details",
         "footer" => [
@@ -47,7 +68,7 @@
         <a class="nav-link active"  onclick="tab1()" href="#tab1" data-toggle="tab">Server Name</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link "  onclick="trustedServers()" href="#trustedServers" data-toggle="tab">Trusted Servers</a>
+        <a class="nav-link "  onclick="trustedServers()" href="#trustRelation" data-toggle="tab">Trusted Servers</a>
     </li>
     <li class="nav-item">
         <a class="nav-link "  onclick="groups()" href="#groups" data-toggle="tab">Groups</a>
@@ -61,7 +82,10 @@
     <div id="tab1" class="tab-pane active">
     </div>
 
-    <div id="trustedServers" class="tab-pane">
+    <div id="trustRelation" class="tab-pane">
+        <button class="btn btn-success mb-2" id="createButton" onclick="showCreateTrustRelationModal()" type="button">Create</button>    
+        <div id="trustedServers">
+        </div>
     </div>
 
     <div id="groups" class="tab-pane">
@@ -69,7 +93,9 @@
 </div>
 
 <script>
-   if(location.hash === ""){
+    var domainName = "";
+
+    if(location.hash === ""){
         tab1();
     }
 
@@ -99,7 +125,6 @@
     }
 
     function showTrustedServerDetailsModal(line){
-        
         var name = line.querySelector("#name").innerHTML;
         var type = line.querySelector("#type").innerHTML;
         var transitive = line.querySelector("#transitive").innerHTML;
@@ -122,30 +147,45 @@
 
     function showDeleteTrustedServerModal(line){
         let name = line.querySelector("#name").innerHTML;
+        domainName = name;
         $('#deleteTrustedServerModal').find('.modal-body').html(
             "Trust relation with \"".bold() + name.bold() + "\" will destroy. Do you really want to continue?".bold());
         $('#deleteTrustedServerModal').modal("show");
-        var form = new FormData();
-
-       /** request(API('destroyTrustRelation'), form, function(response) {
-            message = JSON.parse(response)["message"];
-            showSwal(message, 'success', 3000);
-            $('#deleteTrustedServerModal').modal("hide");
-        }, function(error) {
-            showSwal(error.message, 'error', 3000);
-        });*/
     }
 
     function closeDeleteTrustedServerModal(){
         $('#deleteTrustedServerModal').modal("hide");
     }
 
-    function destroyTrustRelation(){
+    function destroyTrustRelation(line){
         var form = new FormData();
+        form.append("name", domainName);
         request(API('destroyTrustRelation'), form, function(response) {
             message = JSON.parse(response)["message"];
             showSwal(message, 'success', 3000);
             closeDeleteTrustedServerModal();
+        }, function(error) {
+            showSwal(error.message, 'error', 3000);
+        });
+    }
+
+    function showCreateTrustRelationModal(){
+        $('#createTrustRelationModal').modal("show");
+    }
+
+    function createTrustRelation(){
+        var form = new FormData();
+        form.append("newDomainName", $('#createTrustRelationModal').find('input[name=newDomainName]').val().toLowerCase());
+        form.append("newIpAddr", $('#createTrustRelationModal').find('input[name=newIpAddr]').val());
+        form.append("newType", $('#createTrustRelationModal').find('input[name=newType]').val().toLowerCase());
+        form.append("newDirection", $('#createTrustRelationModal').find('input[name=newDirection]').val().toLowerCase());
+        form.append("newCreateLocation", $('#createTrustRelationModal').find('input[name=newCreateLocation]').val().toLowerCase());
+        form.append("newUsername", $('#createTrustRelationModal').find('input[name=newUsername]').val());
+
+        request(API('createTrustRelation'), form, function(response) {
+            message = JSON.parse(response)["message"];
+            showSwal(message, 'success', 10000);
+            $('#createTrustRelationModal').modal("hide");
         }, function(error) {
             showSwal(error.message, 'error', 3000);
         });
