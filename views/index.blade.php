@@ -21,7 +21,7 @@
         "footer" => [
             "text" => "Create",
             "class" => "btn-success",
-            "onclick" => "showCreateTrustRelationModal()"
+            "onclick" => "createTrustRelation()"
         ]
     ])
     @include('inputs', [
@@ -74,6 +74,7 @@
     ])
         @include('inputs', [
         "inputs" => [
+            "Message" => "message",
             "Password" => "password:password"
         ]
     ])
@@ -165,8 +166,8 @@
     function showDeleteTrustedServerModal(line){
         let name = line.querySelector("#name").innerHTML;
         domainName = name;
-       // $('#deleteTrustedServerModal').find('.modal-body').html(
-         //   "Trust relation with \"".bold() + name.bold() + "\" will destroy. Do you really want to continue?".bold());
+        $('#deleteTrustedServerModal').find('.modal-body').html(
+            "Trust relation with \"".bold() + name.bold() + "\" will destroy. Do you really want to continue?".bold());
         $('#deleteTrustedServerModal').modal("show");
     }
 
@@ -179,10 +180,11 @@
         form.append("name", domainName);
         passwd = $('#deleteTrustedServerModal').find('input[name=password]').val();
         form.append("password", passwd);
+        closeDeleteTrustedServerModal();
+        trustedServers();
         request(API('destroyTrustRelation'), form, function(response) {
             message = JSON.parse(response)["message"];
             showSwal(message, 'success', 3000);
-            closeDeleteTrustedServerModal();
         }, function(error) {
             showSwal(error.message, 'error', 3000);
         });
@@ -202,10 +204,11 @@
         form.append("newUsername", $('#createTrustRelationModal').find('input[name=newUsername]').val());
         form.append("password", $('#createTrustRelationModal').find('input[name=password]').val());
 
+        $('#createTrustRelationModal').modal("hide");
         request(API('createTrustRelation'), form, function(response) {
             message = JSON.parse(response)["message"];
             showSwal(message, 'success', 10000);
-            $('#createTrustRelationModal').modal("hide");
+            trustedServers();
         }, function(error) {
             showSwal(error.message, 'error', 3000);
         });

@@ -33,7 +33,7 @@
 
                 "Delete" => [
                     "target" => "showDeleteTrustedServerModal",
-                    "icon" => "fas fa-trash"
+                    "icon" => "fas fa-trash-alt"
                 ],
 
             ],
@@ -57,10 +57,14 @@
         $createLocation = request("newCreateLocation");
         $username = request("newUsername");
         $password = request("password");
+
+        if(!($domainName && $ipAddr && $type && $direction && $createLocation && $username && $password))
+            return respond("Please fill all fields!", 202);
+
         runCommand(sudo() . "samba-tool domain trust create " . $domainName .
                     " --type=" . $type . " --direction=" . $direction .
                     " --create-location=" . $createLocation . " -U " . $username .
-                    " --password=" . $password);
+                    "@" . $domainName . " --password=" . $password);
         return respond("Trust relation with " . $domainName . " has been created", 200);
     }
 
